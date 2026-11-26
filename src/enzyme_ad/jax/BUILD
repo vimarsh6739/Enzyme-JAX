@@ -2080,7 +2080,7 @@ pybind_extension(
         "-Wno-unused-result",
         "-Wno-unused-variable",
         "-Wno-vla-cxx-extension",
-    ],
+    ] + triton_copts,
     linkopts = select({
         "@platforms//os:macos": [
             "-undefined",
@@ -2180,7 +2180,10 @@ pybind_extension(
         "@xla//xla/stream_executor:stream_executor_impl",
         "@xla//xla/stream_executor/cuda:cuda_compute_capability_proto_cc_impl",
         "@xla//xla/tsl/profiler/backends/cpu:annotation_stack_impl",
-    ],
+    ] + select({
+        ":disable_triton_config": [],
+        "//conditions:default": ["@triton//:TritonTransforms"],
+    }),
 )
 
 cc_library(

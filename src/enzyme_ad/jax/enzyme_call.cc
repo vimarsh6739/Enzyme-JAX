@@ -78,6 +78,10 @@
 
 #include "stablehlo/transforms/Passes.h"
 
+#if ENZYME_JAX_ENABLE_TRITON
+#include "triton/Dialect/Triton/Transforms/Passes.h"
+#endif
+
 #include "Integrations/c/EnzymeXLA.h"
 
 namespace {
@@ -306,6 +310,9 @@ NB_MODULE(enzyme_call, m) {
   mlir::enzyme::registerGenerateApplyPatternsPass();
   mlir::enzyme::registerRemoveTransformPass();
   mlir::stablehlo::registerPasses();
+#if ENZYME_JAX_ENABLE_TRITON
+  mlir::triton::registerTritonPasses();
+#endif
 
   nanobind::enum_<Language>(m, "Language")
       .value("CPP", Language::CPP)
