@@ -67,6 +67,24 @@ Alternatively, if you have installed the wheel, you can manually invoke the test
 ```sh
 cd test && python test.py
 ```
+
+## Running TTIR passes from Python
+
+A build with Triton enabled exposes TTIR passes in both `enzymexlamlir-opt`
+and Python's `enzyme_call.run_pass_pipeline`. This example unrolls loops
+annotated with `tt.loop_unroll_factor` in a TTIR module.
+
+```python
+from enzyme_ad.jax import enzyme_call
+
+_, optimized_ttir = enzyme_call.run_pass_pipeline(
+    [], ttir, "triton-loop-unroll,canonicalize"
+)
+```
+
+A Transform schedule can invoke the same pass with
+`transform.apply_registered_pass "triton-loop-unroll"`.
+
 ## LSP Support
 
 Enzyme-Jax exposes a bunch of different tensor rewrites as MLIR passes in `src/enzyme_ad/jax/Passes`. If you want to enable LSP support when working with this code, we recommend that you generate a `compile_commands.json` by running
