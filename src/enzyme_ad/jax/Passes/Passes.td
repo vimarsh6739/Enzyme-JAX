@@ -1617,6 +1617,24 @@ def SCFCPUify : Pass<"cpuify"> {
   ];
 }
 
+def DiscardTritonOutputPass : Pass<"discard-triton-output", "mlir::ModuleOp"> {
+  let summary = "Elide stores to a caller-designated write-only scratch output";
+  let description = [{
+    Apply after combined reverse AD when the regenerated primal output is
+    unused. The caller guarantees that the selected argument refers to
+    exclusive, unobserved storage, disjoint from all other live memory. The
+    pass checks all uses of the argument and fails if it can be read, escape,
+    or participate in an atomic operation. The kernel ABI is preserved.
+    A subsequent canonicalize pass can remove unused address and value code.
+  }];
+  let options = [
+    Option<"function", "function", "std::string", "\"\"",
+           "Name of the TTIR function to specialize">,
+    Option<"argument", "argument", "int64_t", "-1",
+           "Zero-based pointer argument index in the generated kernel ABI">
+  ];
+}
+
 def ConvertTritonToTritonGPUPreservingModuleAttributesPass : Pass<
     "convert-triton-to-triton-gpu-preserving-module-attributes", "mlir::ModuleOp"> {
   let summary = "Triton generally compiles a single kernel, so they can specify the number of ctas and warps. However, we want to be able to compile multiple kernels. This pass will use the attributes from the module and use that to lower to TritonGPU.";
