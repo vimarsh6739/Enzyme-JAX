@@ -1617,6 +1617,17 @@ def SCFCPUify : Pass<"cpuify"> {
   ];
 }
 
+def DetachTritonSoftmaxShiftPass : Pass<"detach-triton-softmax-shift", "mlir::ModuleOp"> {
+  let summary = "Ignore the derivative of the common shift in a normalized row of exponentials";
+  let description = [{
+    Opt-in pre-AD rewrite for row softmax with finite logits. Adding the
+    same scalar to all logits leaves the normalized probabilities invariant
+    in real arithmetic. Detaching that shift can change floating-point
+    rounding in the derivative. Run remove-unnecessary-enzyme-ops after AD.
+  }];
+  let dependentDialects = ["mlir::enzyme::EnzymeDialect"];
+}
+
 def ConvertTritonToTritonGPUPreservingModuleAttributesPass : Pass<
     "convert-triton-to-triton-gpu-preserving-module-attributes", "mlir::ModuleOp"> {
   let summary = "Triton generally compiles a single kernel, so they can specify the number of ctas and warps. However, we want to be able to compile multiple kernels. This pass will use the attributes from the module and use that to lower to TritonGPU.";

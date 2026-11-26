@@ -4,6 +4,15 @@
 // RUN: enzymexlamlir-opt %s --enzyme-wrap="infn=softmax_kernel outfn=fwd_softmax_kernel argTys=enzyme_dup,enzyme_dup,enzyme_const,enzyme_const,enzyme_const,enzyme_const mode=ForwardMode" --canonicalize --remove-unnecessary-enzyme-ops --canonicalize | FileCheck %s --check-prefix=FWD-SOFTMAX-KERNEL
 // RUN: enzymexlamlir-opt %s --enzyme-wrap="infn=softmax_kernel outfn=rev_softmax_kernel argTys=enzyme_dup,enzyme_dup,enzyme_const,enzyme_const,enzyme_const,enzyme_const mode=ReverseModeCombined" --canonicalize --remove-unnecessary-enzyme-ops --canonicalize | FileCheck %s --check-prefix=REV-SOFTMAX-KERNEL
 
+// RUN: enzymexlamlir-opt %s --detach-triton-softmax-shift --enzyme-wrap="infn=softmax_kernel outfn=shift_fwd argTys=enzyme_dup,enzyme_dup,enzyme_const,enzyme_const,enzyme_const,enzyme_const mode=ForwardMode" --canonicalize --remove-unnecessary-enzyme-ops --canonicalize --cse | FileCheck %s --check-prefix=SHIFT-FWD
+// RUN: enzymexlamlir-opt %s --detach-triton-softmax-shift --enzyme-wrap="infn=softmax_kernel outfn=shift_rev argTys=enzyme_dup,enzyme_dup,enzyme_const,enzyme_const,enzyme_const,enzyme_const mode=ReverseModeCombined" --canonicalize --remove-unnecessary-enzyme-ops --canonicalize --cse | FileCheck %s --check-prefix=SHIFT-REV
+// SHIFT-FWD-LABEL: tt.func private @shift_fwd
+// SHIFT-FWD-COUNT-3: "tt.reduce"
+// SHIFT-FWD-NOT: "tt.reduce"
+// SHIFT-REV-LABEL: tt.func private @shift_rev
+// SHIFT-REV-COUNT-3: "tt.reduce"
+// SHIFT-REV-NOT: "tt.reduce"
+
 module {
   tt.func public @softmax_kernel(%arg0: !tt.ptr<f32> {tt.divisibility = 16 : i32}, %arg1: !tt.ptr<f32> {tt.divisibility = 16 : i32}, %arg2: i32, %arg3: i32, %arg4: i32, %arg5: i32) attributes {noinline = false} {
     %cst = arith.constant dense<0xFF800000> : tensor<1024xf32>
