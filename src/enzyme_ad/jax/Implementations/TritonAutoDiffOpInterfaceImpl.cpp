@@ -23,6 +23,7 @@
 #include "Enzyme/MLIR/Interfaces/GradientUtilsReverse.h"
 
 #include "mlir/Dialect/Arith/IR/Arith.h"
+#include "mlir/Dialect/GPU/IR/GPUDialect.h"
 #include "mlir/IR/IRMapping.h"
 #include "mlir/IR/TypeUtilities.h"
 #include "triton/Dialect/Triton/IR/Dialect.h"
@@ -350,7 +351,12 @@ struct MemoryRev : ReverseAutoDiffOpInterface::ExternalModel<
                                                 /*cachePolicy=*/Attribute());
         triton::DescriptorStoreOp::create(b, loc, ptr, z, indices);
       } else {
-        grad = triton::LoadOp::create(b, loc, ptr, mask, mask ? z : Value());
+        if (!g->isConstantValue(input)) {
+          grad = triton::LoadOp::create(b, loc, ptr, mask, mask ? z : Value());
+          // A layout may replicate a seed across warps. Every reader must
+          // finish before a representative lane clears the global address.
+          mlir::gpu::BarrierOp::create(b, loc);
+        }
         triton::StoreOp::create(b, loc, ptr, z, mask);
       }
       if (!g->isConstantValue(input))
@@ -595,6 +601,7 @@ public:
 void mlir::enzyme::registerTritonDialectAutoDiffInterface(
     DialectRegistry &registry) {
   registry.addExtension(+[](MLIRContext *context, triton::TritonDialect *) {
+    context->getOrLoadDialect<mlir::gpu::GPUDialect>();
     // Prefer the mixed-precision pullback to the generated same-type dot rule.
     // The generated forward rule is shared with the forward-mode PR.
     triton::DotOp::attachInterface<DotRev>(*context);

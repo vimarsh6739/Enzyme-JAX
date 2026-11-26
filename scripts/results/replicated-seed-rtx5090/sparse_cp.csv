@@ -1,0 +1,5 @@
+observations,rank,batch,warps,hot_row,loss,relative_l2_gradient_error
+513,24,16,4,0,squared,8.434771464415687e-08
+513,24,16,4,0,huber,7.964396898772632e-08
+513,24,16,4,1,squared,1.929913052288464e-07
+513,24,16,4,1,huber,2.4599434349286865e-07
