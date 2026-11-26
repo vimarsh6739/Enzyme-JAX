@@ -20,3 +20,14 @@ python scripts/benchmark_ttir_recurrence.py --opt /path/to/enzymexlamlir-opt \
   --out run --widths 128 512 2048 8192 --steps 4 32 128 \
   --rows 2048 --samples 15 --repeats 25
 ```
+
+## What happens after lowering?
+
+We also compiled the pointer-kernel version of the cell, hoisted its projection, and used that TTIR as input to two compiler orders. Enzyme-JAX reverse AD followed by Triton's sm120 lowering produced a cubin. Lowering the primal first turns the block reduction into NVVM shuffle intrinsics, shared memory and barriers. LLVM Enzyme reported seven unsupported reverse calls to `llvm.nvvm.shfl.sync.bfly.i32` in this kernel and terminated in type analysis. A scalar NVPTX control with the same pointer ABI and activity annotations differentiated and passed LLVM verification. These are compilation results for the binaries identified in `llvm-control.json`; specialized LLVM derivative rules could change the outcome.
+
+```sh
+python scripts/compare_ttir_llvm_ad.py --ttir-opt /path/to/enzymexlamlir-opt \
+  --llvm-opt /path/to/opt --plugin /path/to/LLVMEnzyme-24.so --out llvm-control
+```
+
+The command writes the shared TTIR input, derivative TTIR, cubin, lowered LLVM modules and full compiler diagnostics.
