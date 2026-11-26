@@ -36,7 +36,8 @@ tt.func @constant_store(%out: !tt.ptr<f32>) {
 // REV-LABEL: tt.func private @rev(
 // REV: %[[ZERO:.*]] = arith.constant dense<0.000000e+00> : tensor<4xf32>
 // REV: %[[DY:.*]] = tt.load %[[DST:[a-zA-Z0-9_]+]] : tensor<4x!tt.ptr<f32>>
-// REV: tt.store %[[DST]], %[[ZERO]]
+// REV-NEXT: gpu.barrier
+// REV-NEXT: tt.store %[[DST]], %[[ZERO]]
 // REV: tt.atomic_rmw fadd, relaxed, gpu, {{.*}}, %[[DY]], %[[MASK:.*]] :
 // REV: %[[OTHER:.*]] = arith.select %[[MASK]], %[[ZERO]], %[[DY]]
 // REV: tt.return %[[OTHER]] : tensor<4xf32>
@@ -48,6 +49,7 @@ tt.func @constant_store(%out: !tt.ptr<f32>) {
 // CONST-REV-LABEL: tt.func private @rev_constant(
 // CONST-REV-SAME: %[[P:arg[0-9]+]]: !tt.ptr<f32>, %[[DP:arg[0-9]+]]: !tt.ptr<f32>
 // CONST-REV: %[[ZERO:.*]] = arith.constant 0.000000e+00 : f32
+// CONST-REV-NOT: gpu.barrier
 // CONST-REV: tt.store %[[DP]], %[[ZERO]]
 // CONST-REV: tt.return
 
@@ -69,5 +71,6 @@ tt.func @masked_store(%out: !tt.ptr<f32>, %value: f32, %mask: i1) {
 // STORE-REV-LABEL: tt.func private @rev_store(
 // STORE-REV: %[[ZERO:.*]] = arith.constant 0.000000e+00 : f32
 // STORE-REV: %[[D:.*]] = tt.load %arg1, %arg3, %[[ZERO]] : !tt.ptr<f32>
-// STORE-REV: tt.store %arg1, %[[ZERO]], %arg3 : !tt.ptr<f32>
+// STORE-REV-NEXT: gpu.barrier
+// STORE-REV-NEXT: tt.store %arg1, %[[ZERO]], %arg3 : !tt.ptr<f32>
 // STORE-REV: tt.return %[[D]] : f32

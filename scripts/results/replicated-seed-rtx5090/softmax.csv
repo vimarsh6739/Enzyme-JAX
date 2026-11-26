@@ -1,0 +1,7 @@
+compiler,schedule,warps,launches,failed,max_abs_error
+original,baseline,4,100,0,7.875010454849729e-08
+original,baseline,8,100,88,0.17392025537671674
+fixed,baseline,4,100,0,7.875010454849729e-08
+fixed,baseline,8,100,0,7.875010454849729e-08
+fixed,detach,4,100,0,3.6787190904608025e-08
+fixed,detach,8,100,0,3.6787190904608025e-08
