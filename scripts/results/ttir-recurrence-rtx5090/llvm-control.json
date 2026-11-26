@@ -1,0 +1,23 @@
+{
+  "target": "sm120",
+  "warps": 4,
+  "triton": "3.9.0",
+  "enzyme_plugin_sha256": "73c906a48be175ee944196b83771e7ac8d6cadbe3c471827a38b212eb9070aca",
+  "ttir_opt_sha256": "eef40f3a80642f7538b9d79245ed0b6030180252aaabe73ba23deb514336e44d",
+  "llvm_opt_sha256": "eb96c90316639a71e48a4c44ddcb2ac80fc6b59d30f57f291c3976165244a214",
+  "llvm_version": "LLVM (http://llvm.org/):\n  LLVM version 24.0.0git\n  Optimized build with assertions.\n  Default target: x86_64-unknown-linux-gnu\n  Host CPU: znver4",
+  "input_ttir_sha256": "693baac7758c409da544667e126a49dfb34434838c4434fec87a0f0ba8f0fc87",
+  "ttir_ad_cubin_bytes": 14344,
+  "scalar_llvm_ad": {
+    "returncode": 0,
+    "unsupported_intrinsics": {},
+    "assertion": null
+  },
+  "lowered_llvm_ad": {
+    "returncode": -6,
+    "unsupported_intrinsics": {
+      "llvm.nvvm.shfl.sync.bfly.i32": 7
+    },
+    "assertion": "`0 && \"Error Unknown Value: \"' failed."
+  }
+}

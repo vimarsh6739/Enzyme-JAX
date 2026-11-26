@@ -1,0 +1,24 @@
+{
+  "gpu": "NVIDIA GeForce RTX 5090",
+  "capability": [
+    12,
+    0
+  ],
+  "torch": "2.12.0a0+git0d62256",
+  "triton": "3.9.0",
+  "opt": "/mnt/vimarsh6739/hiord/Enzyme-JAX-tritonrev/bazel-bin/enzymexlamlir-opt",
+  "opt_version": "LLVM (http://llvm.org/):\n  LLVM version 24.0.0git\n  Optimized build.",
+  "study_commit": "a56c4856ebe06a673e5c09e3fee88de45b75bba4",
+  "fixture_sha256": "beba9ccbf7d81f54b7fe74cbce0dd7e18c808fe14f76fa90f8f05537be118031",
+  "seed": -0.625,
+  "decay": 0.984375,
+  "random_seed": 23,
+  "warps": 4,
+  "replays_per_sample": 25,
+  "date": "2026-11-26",
+  "cuda_driver": "575.57.08",
+  "triton_checkout": "5b86f2c73b",
+  "compiler_base": "a56c4856ebe06a673e5c09e3fee88de45b75bba4",
+  "opt_sha256": "eef40f3a80642f7538b9d79245ed0b6030180252aaabe73ba23deb514336e44d",
+  "benchmark_sha256": "4f1cfb05ea42c35ba992fa4683b7c8534be2e7ea5326490096f245ca79d0d09c"
+}
